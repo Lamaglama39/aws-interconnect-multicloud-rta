@@ -217,11 +217,30 @@ sudo traceroute -I 10.0.1.100
 
 ## リソースの削除
 
-```bash
-# Interconnect接続を先に削除すること（手動）
-# 1. GCP側: VPC Peering削除 → Transport削除
-# 2. AWS側: Interconnect削除
+Interconnect関連リソースを先に削除してから、terraform destroyを実行する。
 
-# Terraformリソースの削除
+### Step 1: GCP側 - VPC Peering削除
+
+```bash
+gcloud compute networks peerings delete aws-peering \
+  --network=interconnect-multicloud-vpc
+```
+
+### Step 2: GCP側 - Transport削除
+
+CloudShell上で実行する
+
+```bash
+gcloud beta network-connectivity transports delete interconnect-transport \
+  --region=us-east4
+```
+
+### Step 3: AWS側 - Interconnect削除
+
+AWS ConsoleのDirect Connect画面から「AWS Interconnect」を開き、作成した接続を削除する。
+
+### Step 4: Terraformリソースの削除
+
+```bash
 terraform destroy
 ```
